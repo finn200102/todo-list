@@ -1,3 +1,4 @@
+import overlayHtml from "./templates/add-task-form.html";
 const todo = (title, description, dueDate, priority, notes, checklist) => {
   return {
     id: Date.now(),
@@ -49,4 +50,28 @@ export const tasksPage = (function () {
     content.appendChild(taskHolder);
   };
   return { renderTaskPage };
+})();
+
+export const addTaskOverlay = (function () {
+  const render = async () => {
+    console.log("render");
+    const addTaskHolder = document.createElement("div");
+    addTaskHolder.setAttribute("id", "add-task-overlay");
+    addTaskHolder.innerHTML = overlayHtml;
+    document.body.append(addTaskHolder);
+    document.body.style.backgroundColor = "grey";
+    setupFormHandler();
+  };
+  const setupFormHandler = () => {
+    const form = document.getElementById("add-task-form");
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const taskName = document.getElementById("task-name").value;
+      TodoManager.addTodo(todo(taskName, ".", ".", ".", ".", "."));
+      form.reset();
+      document.body.removeChild(document.getElementById("add-task-overlay"));
+      document.body.style.backgroundColor = "white";
+    });
+  };
+  return { render };
 })();
