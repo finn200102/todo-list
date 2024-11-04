@@ -1,2 +1,7 @@
 import "./styles.css";
-import { TodoManager } from "./todo";
+import { TodoManager, tasksPage } from "./todo";
+
+const button = document.getElementById("list-task-button");
+button.addEventListener("click", function () {
+  tasksPage.renderTaskPage();
+});
