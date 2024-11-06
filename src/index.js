@@ -11,6 +11,11 @@ listTodayButton.addEventListener("click", function () {
   tasksPage.renderDueTodayPage();
 });
 
+const upcommingNextWeekButton = document.getElementById("upcomming-button");
+upcommingNextWeekButton.addEventListener("click", function () {
+  tasksPage.renderUpcommingNextWeek();
+});
+
 const addTaskButton = document.getElementById("add-task-button");
 addTaskButton.addEventListener("click", function () {
   addTaskOverlay.render();

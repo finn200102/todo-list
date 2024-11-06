@@ -1,5 +1,5 @@
 import overlayHtml from "./templates/add-task-form.html";
-import { format, isEqual } from "date-fns";
+import { format, isEqual, isBefore, addWeeks, compareAsc } from "date-fns";
 const todo = (title, description, dueDate, priority, notes) => {
   return {
     id: Date.now(),
@@ -32,10 +32,25 @@ export const TodoManager = (function () {
         format(new Date(), "dd/MM/yyyy")
       )
     );
+    return results;
+  };
+  const upcommingNextWeek = () => {
+    const results = todos
+      .filter((todo) =>
+        isBefore(new Date(todo.dueDate), addWeeks(new Date(), 1))
+      )
+      .sort((a, b) => compareAsc(a.dueDate, b.dueDate));
 
     return results;
   };
-  return { addTodo, listTodos, countTodos, getTodoByIdx, dueToday };
+  return {
+    addTodo,
+    listTodos,
+    countTodos,
+    getTodoByIdx,
+    dueToday,
+    upcommingNextWeek,
+  };
 })();
 
 const clearContent = () => {
@@ -75,7 +90,10 @@ export const tasksPage = (function () {
   const renderDueTodayPage = () => {
     renderTasks.renderTaskpage(TodoManager.dueToday());
   };
-  return { renderTaskPage, renderDueTodayPage };
+  const renderUpcommingNextWeek = () => {
+    renderTasks.renderTaskpage(TodoManager.upcommingNextWeek());
+  };
+  return { renderTaskPage, renderDueTodayPage, renderUpcommingNextWeek };
 })();
 
 export const addTaskOverlay = (function () {
