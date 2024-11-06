@@ -22,7 +22,12 @@ export const TodoManager = (function () {
     todos.push(todo);
   };
   const listTodos = () => {
-    return todos.sort((a, b) => compareAsc(a.dueDate, b.dueDate));
+    return todos.sort((a, b) => {
+      if (!a.dueDate && !b.dueDate) return 0;
+      if (!a.dueDate) return 1;
+      if (!b.dueDate) return -1;
+      return compareAsc(a.dueDate, b.dueDate);
+    });
   };
   const getTodoByIdx = (idx) => {
     return todos[idx];
@@ -32,20 +37,32 @@ export const TodoManager = (function () {
   };
   const dueToday = () => {
     const results = todos
-      .filter((todo) =>
-        isEqual(
-          format(new Date(todo.dueDate), "dd/MM/yyyy"),
-          format(new Date(), "dd/MM/yyyy")
-        )
-      )
-      .sort((a, b) => compareAsc(a.dueDate, b.dueDate));
+      .filter((todo) => {
+        if (!todo.dueDate) return false;
+        try {
+          return isEqual(
+            format(new Date(todo.dueDate), "dd/MM/yyyy"),
+            format(new Date(), "dd/MM/yyyy")
+          );
+        } catch (error) {
+          return false;
+        }
+      })
+      .sort((a, b) => {
+        compareAsc(a.dueDate, b.dueDate);
+      });
     return results;
   };
   const upcommingNextWeek = () => {
     const results = todos
-      .filter((todo) =>
-        isBefore(new Date(todo.dueDate), addWeeks(new Date(), 1))
-      )
+      .filter((todo) => {
+        if (!todo.dueDate) return false;
+        try {
+          return isBefore(new Date(todo.dueDate), addWeeks(new Date(), 1));
+        } catch (error) {
+          return false;
+        }
+      })
       .sort((a, b) => compareAsc(a.dueDate, b.dueDate));
 
     return results;
@@ -85,20 +102,22 @@ const renderTasks = (function () {
   const renderTaskpage = (tasks) => {
     clearContent();
     const content = document.getElementById("content");
+
+    const template = document.getElementById("todo-item-template");
+
     const taskHolder = document.createElement("div");
     for (let i = 0; i < tasks.length; i++) {
-      const task = document.createElement("div");
-      const title = document.createElement("h3");
-      title.textContent = tasks[i].title;
-      const description = document.createElement("p");
-      description.textContent = tasks[i].description;
-      const dueDate = document.createElement("h4");
-      dueDate.textContent = tasks[i].dueDate;
-      task.appendChild(title);
-      task.appendChild(description);
-      task.appendChild(dueDate);
-      taskHolder.appendChild(task);
+      const element = template.content.cloneNode(true).children[0];
+      const todoTitle = element.querySelector("#todo-item-title");
+      console.log(tasks[i]);
+
+      todoTitle.textContent = tasks[i].title;
+      console.log(todoTitle.textContent);
+      const todoDescription = element.querySelector("#todo-item-description");
+      todoDescription.textContent = tasks[i].description;
+      taskHolder.appendChild(element);
     }
+
     content.appendChild(taskHolder);
   };
   return { renderTaskpage };
