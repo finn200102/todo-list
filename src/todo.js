@@ -13,11 +13,15 @@ const todo = (title, description, dueDate, priority, notes) => {
 
 export const TodoManager = (function () {
   const todos = [];
+  const projects = ["standart"];
+  const listProjects = () => {
+    return projects;
+  };
   const addTodo = (todo) => {
     todos.push(todo);
   };
   const listTodos = () => {
-    return todos;
+    return todos.sort((a, b) => compareAsc(a.dueDate, b.dueDate));
   };
   const getTodoByIdx = (idx) => {
     return todos[idx];
@@ -26,12 +30,14 @@ export const TodoManager = (function () {
     return todos.length;
   };
   const dueToday = () => {
-    const results = todos.filter((todo) =>
-      isEqual(
-        format(new Date(todo.dueDate), "dd/MM/yyyy"),
-        format(new Date(), "dd/MM/yyyy")
+    const results = todos
+      .filter((todo) =>
+        isEqual(
+          format(new Date(todo.dueDate), "dd/MM/yyyy"),
+          format(new Date(), "dd/MM/yyyy")
+        )
       )
-    );
+      .sort((a, b) => compareAsc(a.dueDate, b.dueDate));
     return results;
   };
   const upcommingNextWeek = () => {
@@ -50,7 +56,21 @@ export const TodoManager = (function () {
     getTodoByIdx,
     dueToday,
     upcommingNextWeek,
+    listProjects,
   };
+})();
+
+const populateDatalist = (function () {
+  const populate = (projects) => {
+    const datalist = document.getElementById("projects");
+    datalist.innerHTML = "";
+    projects.forEach((project) => {
+      const option = document.createElement("option");
+      option.value = project;
+      datalist.appendChild(option);
+    });
+  };
+  return { populate };
 })();
 
 const clearContent = () => {
@@ -105,6 +125,7 @@ export const addTaskOverlay = (function () {
     document.body.append(addTaskHolder);
     document.body.style.backgroundColor = "grey";
     setupFormHandler();
+    populateDatalist.populate(TodoManager.listProjects());
   };
   const setupFormHandler = () => {
     const form = document.getElementById("add-task-form");
