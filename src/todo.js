@@ -8,6 +8,7 @@ const todo = (title, description, dueDate, priority, notes) => {
     dueDate,
     priority,
     notes,
+    checkbox: false,
   };
 };
 
