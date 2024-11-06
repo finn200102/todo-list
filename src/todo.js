@@ -1,5 +1,5 @@
 import overlayHtml from "./templates/add-task-form.html";
-import { format } from "date-fns";
+import { format, isEqual } from "date-fns";
 const todo = (title, description, dueDate, priority, notes) => {
   return {
     id: Date.now(),
@@ -12,7 +12,7 @@ const todo = (title, description, dueDate, priority, notes) => {
 };
 
 export const TodoManager = (function () {
-  const todos = [todo("hi", ".", ".", ".", ".")];
+  const todos = [];
   const addTodo = (todo) => {
     todos.push(todo);
   };
@@ -25,7 +25,17 @@ export const TodoManager = (function () {
   const countTodos = () => {
     return todos.length;
   };
-  return { addTodo, listTodos, countTodos, getTodoByIdx };
+  const dueToday = () => {
+    const results = todos.filter((todo) =>
+      isEqual(
+        format(new Date(todo.dueDate), "dd/MM/yyyy"),
+        format(new Date(), "dd/MM/yyyy")
+      )
+    );
+
+    return results;
+  };
+  return { addTodo, listTodos, countTodos, getTodoByIdx, dueToday };
 })();
 
 const clearContent = () => {
@@ -35,24 +45,37 @@ const clearContent = () => {
   }
 };
 
-export const tasksPage = (function () {
-  const renderTaskPage = () => {
+const renderTasks = (function () {
+  const renderTaskpage = (tasks) => {
     clearContent();
     const content = document.getElementById("content");
     const taskHolder = document.createElement("div");
-    for (let i = 0; i < TodoManager.countTodos(); i++) {
+    for (let i = 0; i < tasks.length; i++) {
       const task = document.createElement("div");
       const title = document.createElement("h3");
-      title.textContent = TodoManager.getTodoByIdx(i).title;
+      title.textContent = tasks[i].title;
       const description = document.createElement("p");
-      description.textContent = TodoManager.getTodoByIdx(i).description;
+      description.textContent = tasks[i].description;
+      const dueDate = document.createElement("h4");
+      dueDate.textContent = tasks[i].dueDate;
       task.appendChild(title);
       task.appendChild(description);
+      task.appendChild(dueDate);
       taskHolder.appendChild(task);
     }
     content.appendChild(taskHolder);
   };
-  return { renderTaskPage };
+  return { renderTaskpage };
+})();
+
+export const tasksPage = (function () {
+  const renderTaskPage = () => {
+    renderTasks.renderTaskpage(TodoManager.listTodos());
+  };
+  const renderDueTodayPage = () => {
+    renderTasks.renderTaskpage(TodoManager.dueToday());
+  };
+  return { renderTaskPage, renderDueTodayPage };
 })();
 
 export const addTaskOverlay = (function () {
