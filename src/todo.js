@@ -1,5 +1,6 @@
 import overlayHtml from "./templates/add-task-form.html";
-const todo = (title, description, dueDate, priority, notes, checklist) => {
+import { format } from "date-fns";
+const todo = (title, description, dueDate, priority, notes) => {
   return {
     id: Date.now(),
     title,
@@ -7,12 +8,11 @@ const todo = (title, description, dueDate, priority, notes, checklist) => {
     dueDate,
     priority,
     notes,
-    checklist,
   };
 };
 
 export const TodoManager = (function () {
-  const todos = [todo("hi", ".", ".", ".", ".", ".")];
+  const todos = [todo("hi", ".", ".", ".", ".")];
   const addTodo = (todo) => {
     todos.push(todo);
   };
@@ -44,7 +44,10 @@ export const tasksPage = (function () {
       const task = document.createElement("div");
       const title = document.createElement("h3");
       title.textContent = TodoManager.getTodoByIdx(i).title;
+      const description = document.createElement("p");
+      description.textContent = TodoManager.getTodoByIdx(i).description;
       task.appendChild(title);
+      task.appendChild(description);
       taskHolder.appendChild(task);
     }
     content.appendChild(taskHolder);
@@ -67,7 +70,15 @@ export const addTaskOverlay = (function () {
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       const taskName = document.getElementById("task-name").value;
-      TodoManager.addTodo(todo(taskName, ".", ".", ".", ".", "."));
+      const taskDescription = document.getElementById("task-description").value;
+      const taskDueDate = document.getElementById("task-due-date").value;
+      const taskPriority = document.getElementById("task-priority").value;
+      const taskNotes = document.getElementById("task-notes").value;
+
+      // console.log(format(new Date(taskDueDate), "MM/dd/yyyy"));
+      TodoManager.addTodo(
+        todo(taskName, taskDescription, taskDueDate, taskPriority, taskNotes)
+      );
       form.reset();
       document.body.removeChild(document.getElementById("add-task-overlay"));
       document.body.style.backgroundColor = "white";
