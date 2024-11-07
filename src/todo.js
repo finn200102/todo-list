@@ -153,6 +153,24 @@ export const addTaskOverlay = (function () {
     document.body.append(addTaskHolder);
     document.body.style.backgroundColor = "grey";
     setupFormHandler();
+    const form = document.getElementById("add-task-overlay");
+    document.addEventListener("mousedown", (event) => {
+      if (document.getElementById("add-task-overlay")) {
+        const currentForm = document.getElementById("add-task-overlay");
+        if (
+          form &&
+          !form.contains(event.target) &&
+          event.target.closest("#add-task-overlay") === null
+        ) {
+          try {
+            currentForm.parentElement.removeChild(form);
+          } catch (error) {
+            console.log("Error removing overlay:", error);
+          }
+        }
+      }
+    });
+
     populateDatalist.populate(TodoManager.listProjects());
   };
   const setupFormHandler = () => {
