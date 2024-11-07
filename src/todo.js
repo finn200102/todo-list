@@ -13,13 +13,24 @@ const todo = (title, description, dueDate, priority, notes) => {
 };
 
 export const TodoManager = (function () {
-  const todos = [];
+  let todos = [];
   const projects = ["standart"];
+  if (!localStorage.getItem("todos")) {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  } else {
+    todos = JSON.parse(localStorage.getItem("todos"));
+  }
+  if (!localStorage.getItem("projects")) {
+    localStorage.setItem("projects", JSON.stringify(projects));
+  } else {
+    todos = JSON.parse(localStorage.getItem("projects"));
+  }
   const listProjects = () => {
     return projects;
   };
   const addTodo = (todo) => {
     todos.push(todo);
+    localStorage.setItem("todos", JSON.stringify(todos));
   };
   const listTodos = () => {
     return todos.sort((a, b) => {
