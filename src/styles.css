@@ -34,6 +34,25 @@ body {
   z-index: 9999;
   display: grid;
   background-color: white;
+  border-radius: 20px;
+  background-color: var(--dark-color);
+  color: white;
+}
+
+#add-task-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  padding: 10px;
+}
+
+#add-task-form > input {
+  border: none;
+  border-radius: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
+  min-height: 20px;
 }
 
 #sidebar > nav {
