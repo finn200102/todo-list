@@ -52,3 +52,15 @@ body {
 #todo-item-title {
   margin: 0;
 }
+
+.sidebar-button {
+  border: none;
+  border-radius: 10px;
+  background-color: transparent;
+  font-size: 20px;
+  min-width: 60%;
+}
+
+.sidebar-button:hover {
+  background-color: var(--strong-accent);
+}
