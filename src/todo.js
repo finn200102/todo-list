@@ -49,6 +49,13 @@ export const TodoManager = (function () {
       return compareAsc(a.dueDate, b.dueDate);
     });
   };
+  const listTodosBySearch = (searchTerm) => {
+    return todos.filter((todo) => {
+      if (todo.title.includes(searchTerm)) {
+        return true;
+      }
+    });
+  };
   const listTodosByProject = (project) => {
     // returns an array of todos with the specified project
     if (projects.includes(project)) {
@@ -108,6 +115,7 @@ export const TodoManager = (function () {
     upcommingNextWeek,
     listProjects,
     listTodosByProject,
+    listTodosBySearch,
   };
 })();
 
@@ -174,6 +182,12 @@ export const tasksPage = (function () {
       project
     );
   };
+  const renderSearchPage = (searchTerm) => {
+    renderTasks.renderTaskpage(
+      TodoManager.listTodosBySearch(searchTerm),
+      "Search Results:"
+    );
+  };
   const renderUpcommingNextWeek = () => {
     renderTasks.renderTaskpage(
       TodoManager.upcommingNextWeek(),
@@ -185,6 +199,7 @@ export const tasksPage = (function () {
     renderDueTodayPage,
     renderUpcommingNextWeek,
     renderProjectPage,
+    renderSearchPage,
   };
 })();
 
@@ -281,7 +296,7 @@ export const searchOverlay = (function () {
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       const taskName = document.getElementById("search-name").value;
-      console.log(taskName);
+      tasksPage.renderSearchPage(taskName);
       form.reset();
       document.body.removeChild(document.getElementById("search-overlay"));
       document.body.style.backgroundColor = "white";
