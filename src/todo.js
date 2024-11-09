@@ -36,11 +36,15 @@ export const TodoManager = (function () {
     todos.push(todo);
     localStorage.setItem("todos", JSON.stringify(todos));
   };
+  const removeTodo = (id) => {
+    let newArray = todos.filter((item) => item.id !== +id);
+
+    todos = newArray;
+  };
   const listTodos = () => {
     if (!todos || todos.length === 0) {
       return [];
     }
-    console.log(todos);
 
     return todos.sort((a, b) => {
       if (!a.dueDate && !b.dueDate) return 0;
@@ -108,6 +112,7 @@ export const TodoManager = (function () {
   };
   return {
     addTodo,
+    removeTodo,
     listTodos,
     countTodos,
     getTodoByIdx,
@@ -152,6 +157,7 @@ const renderTasks = (function () {
     const taskHolder = document.createElement("div");
     for (let i = 0; i < tasks.length; i++) {
       const element = template.content.cloneNode(true).children[0];
+      element.setAttribute("task-id", tasks[i].id);
       const todoTitle = element.querySelector("#todo-item-title");
       todoTitle.textContent = tasks[i].title;
       const todoDueDate = element.querySelector("#todo-item-dueDate");
@@ -159,6 +165,12 @@ const renderTasks = (function () {
         new Date(tasks[i].dueDate),
         "dd/MM/yyyy"
       );
+      const todoDeleteButton = element.querySelector("#todo-delete-button");
+      todoDeleteButton.addEventListener("click", () => {
+        const id = element.getAttribute("task-id");
+        TodoManager.removeTodo(id);
+        content.children[1].removeChild(element);
+      });
       const todoDescription = element.querySelector("#todo-item-description");
       todoDescription.textContent = tasks[i].description;
       taskHolder.appendChild(element);
