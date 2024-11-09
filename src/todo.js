@@ -1,11 +1,12 @@
 import overlayHtml from "./templates/add-task-form.html";
 import { format, isEqual, isBefore, addWeeks, compareAsc } from "date-fns";
-const todo = (title, description, dueDate, priority, notes) => {
+const todo = (title, description, dueDate, project, priority, notes) => {
   return {
     id: Date.now(),
     title,
     description,
     dueDate,
+    project,
     priority,
     notes,
     checkbox: false,
@@ -13,8 +14,9 @@ const todo = (title, description, dueDate, priority, notes) => {
 };
 
 export const TodoManager = (function () {
+  // writes, saves, loads all the todos and projects
   let todos = [];
-  const projects = ["standart"];
+  let projects = ["standart"];
   if (!localStorage.getItem("todos")) {
     localStorage.setItem("todos", JSON.stringify(todos));
   } else {
@@ -23,7 +25,7 @@ export const TodoManager = (function () {
   if (!localStorage.getItem("projects")) {
     localStorage.setItem("projects", JSON.stringify(projects));
   } else {
-    todos = JSON.parse(localStorage.getItem("projects"));
+    projects = JSON.parse(localStorage.getItem("projects"));
   }
   const listProjects = () => {
     return projects;
@@ -33,12 +35,29 @@ export const TodoManager = (function () {
     localStorage.setItem("todos", JSON.stringify(todos));
   };
   const listTodos = () => {
+    if (!todos || todos.length === 0) {
+      return [];
+    }
+    console.log(todos);
+
     return todos.sort((a, b) => {
       if (!a.dueDate && !b.dueDate) return 0;
       if (!a.dueDate) return 1;
       if (!b.dueDate) return -1;
       return compareAsc(a.dueDate, b.dueDate);
     });
+  };
+  const listTodosByProject = (project) => {
+    // returns an array of todos with the specified project
+    if (projects.includes(project)) {
+      return todos.filter((todo) => {
+        if (todo.project === project) {
+          return true;
+        }
+      });
+    } else {
+      return null;
+    }
   };
   const getTodoByIdx = (idx) => {
     return todos[idx];
@@ -86,6 +105,7 @@ export const TodoManager = (function () {
     dueToday,
     upcommingNextWeek,
     listProjects,
+    listTodosByProject,
   };
 })();
 
@@ -146,20 +166,31 @@ export const tasksPage = (function () {
   const renderDueTodayPage = () => {
     renderTasks.renderTaskpage(TodoManager.dueToday(), "Due Today");
   };
+  const renderProjectPage = (project) => {
+    renderTasks.renderTaskpage(
+      TodoManager.listTodosByProject(project),
+      project
+    );
+  };
   const renderUpcommingNextWeek = () => {
     renderTasks.renderTaskpage(
       TodoManager.upcommingNextWeek(),
       "Due next Week"
     );
   };
-  return { renderTaskPage, renderDueTodayPage, renderUpcommingNextWeek };
+  return {
+    renderTaskPage,
+    renderDueTodayPage,
+    renderUpcommingNextWeek,
+    renderProjectPage,
+  };
 })();
 
 export const addTaskOverlay = (function () {
   const render = async () => {
-    console.log("render");
     const addTaskHolder = document.createElement("div");
     addTaskHolder.setAttribute("id", "add-task-overlay");
+    // add html template for add task form
     addTaskHolder.innerHTML = overlayHtml;
     document.body.append(addTaskHolder);
     document.body.style.backgroundColor = "grey";
@@ -193,10 +224,18 @@ export const addTaskOverlay = (function () {
       const taskDueDate = document.getElementById("task-due-date").value;
       const taskPriority = document.getElementById("task-priority").value;
       const taskNotes = document.getElementById("task-notes").value;
+      const taskProject = document.getElementById("projects-input").value;
 
       // console.log(format(new Date(taskDueDate), "MM/dd/yyyy"));
       TodoManager.addTodo(
-        todo(taskName, taskDescription, taskDueDate, taskPriority, taskNotes)
+        todo(
+          taskName,
+          taskDescription,
+          taskDueDate,
+          taskProject,
+          taskPriority,
+          taskNotes
+        )
       );
       form.reset();
       document.body.removeChild(document.getElementById("add-task-overlay"));

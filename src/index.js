@@ -16,6 +16,13 @@ upcommingNextWeekButton.addEventListener("click", function () {
   tasksPage.renderUpcommingNextWeek();
 });
 
+const standartProjectButton = document.getElementById(
+  "standart-project-button"
+);
+standartProjectButton.addEventListener("click", function () {
+  tasksPage.renderProjectPage("standart");
+});
+
 const addTaskButton = document.getElementById("add-task-button");
 addTaskButton.addEventListener("click", function () {
   addTaskOverlay.render();
