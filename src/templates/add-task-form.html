@@ -1,7 +1,7 @@
 <div id="add-task-container">
   <form id="add-task-form">
     <label for="task-name">Task name:</label>
-    <input type="text" id="task-name" />
+    <input type="text" id="task-name" required />
     <label for="task-project">Task project:</label>
     <input list="projects" id="projects-input" />
     <datalist id="projects"></datalist>
@@ -13,7 +13,7 @@
       maxlength="200"
     ></textarea>
     <label for="task-due-date">Due Date:</label>
-    <input type="date" id="task-due-date" />
+    <input type="date" id="task-due-date" required />
     <label for="task-priority">Prioirty:</label>
     <input type="number" id="task-priority" min="0" max="5" />
     <label for="task-notes">Notes:</label>

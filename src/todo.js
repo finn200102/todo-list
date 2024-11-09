@@ -32,26 +32,38 @@ export const TodoManager = (function () {
   const listProjects = () => {
     return projects;
   };
+  const addProject = (project) => {
+    if (!projects.includes(project)) {
+      projects.push(project);
+      localStorage.setItem("projects", JSON.stringify(projects));
+    }
+  };
   const addTodo = (todo) => {
     todos.push(todo);
     localStorage.setItem("todos", JSON.stringify(todos));
+    if (!projects.includes(todo.project)) {
+      addProject(todo.project);
+    }
   };
   const removeTodo = (id) => {
     let newArray = todos.filter((item) => item.id !== +id);
-
     todos = newArray;
+    localStorage.setItem("todos", JSON.stringify(todos));
   };
   const listTodos = () => {
     if (!todos || todos.length === 0) {
       return [];
     }
-
-    return todos.sort((a, b) => {
-      if (!a.dueDate && !b.dueDate) return 0;
-      if (!a.dueDate) return 1;
-      if (!b.dueDate) return -1;
-      return compareAsc(a.dueDate, b.dueDate);
-    });
+    try {
+      return todos.sort((a, b) => {
+        if (!a.dueDate && !b.dueDate) return 0;
+        if (!a.dueDate) return 1;
+        if (!b.dueDate) return -1;
+        return compareAsc(a.dueDate, b.dueDate);
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
   const listTodosBySearch = (searchTerm) => {
     return todos.filter((todo) => {
@@ -124,6 +136,29 @@ export const TodoManager = (function () {
   };
 })();
 
+export const projectButtons = (function () {
+  const createButtons = () => {
+    let projects = TodoManager.listProjects();
+    const projectsContainer = document.getElementById("projects-container");
+    while (projectsContainer.firstChild) {
+      projectsContainer.removeChild(projectsContainer.firstChild);
+    }
+    for (let i = 0; i < projects.length; i++) {
+      const button = document.createElement("button");
+      button.textContent = projects[i];
+      button.classList.add("sidebar-button");
+      button.classList.add("project-button");
+      projectsContainer.appendChild(button);
+      button.addEventListener("click", () => {
+        tasksPage.renderProjectPage(projects[i]);
+      });
+    }
+  };
+  return {
+    createButtons,
+  };
+})();
+
 const populateDatalist = (function () {
   const populate = (projects) => {
     const datalist = document.getElementById("projects");
@@ -159,8 +194,10 @@ const renderTasks = (function () {
       const element = template.content.cloneNode(true).children[0];
       element.setAttribute("task-id", tasks[i].id);
       const todoTitle = element.querySelector("#todo-item-title");
+
       todoTitle.textContent = tasks[i].title;
       const todoDueDate = element.querySelector("#todo-item-dueDate");
+
       todoDueDate.textContent = format(
         new Date(tasks[i].dueDate),
         "dd/MM/yyyy"

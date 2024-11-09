@@ -1,5 +1,11 @@
 import "./styles.css";
-import { TodoManager, tasksPage, addTaskOverlay, searchOverlay } from "./todo";
+import {
+  TodoManager,
+  tasksPage,
+  addTaskOverlay,
+  searchOverlay,
+  projectButtons,
+} from "./todo";
 
 const listTaskButton = document.getElementById("list-task-button");
 listTaskButton.addEventListener("click", function () {
@@ -16,13 +22,6 @@ upcommingNextWeekButton.addEventListener("click", function () {
   tasksPage.renderUpcommingNextWeek();
 });
 
-const standartProjectButton = document.getElementById(
-  "standart-project-button"
-);
-standartProjectButton.addEventListener("click", function () {
-  tasksPage.renderProjectPage("standart");
-});
-
 const addTaskButton = document.getElementById("add-task-button");
 addTaskButton.addEventListener("click", function () {
   addTaskOverlay.render();
@@ -32,3 +31,5 @@ const searchButton = document.getElementById("search-button");
 searchButton.addEventListener("click", function () {
   searchOverlay.render();
 });
+
+projectButtons.createButtons();

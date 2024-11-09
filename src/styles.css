@@ -120,6 +120,14 @@ body {
   min-width: 60%;
 }
 
+#projects-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
 .sidebar-button:hover {
   background-color: var(--strong-accent);
 }
