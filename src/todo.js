@@ -1,4 +1,6 @@
+import { se } from "date-fns/locale";
 import overlayHtml from "./templates/add-task-form.html";
+import searchOverlayHtml from "./templates/search-form.html";
 import { format, isEqual, isBefore, addWeeks, compareAsc } from "date-fns";
 const todo = (title, description, dueDate, project, priority, notes) => {
   return {
@@ -215,6 +217,7 @@ export const addTaskOverlay = (function () {
 
     populateDatalist.populate(TodoManager.listProjects());
   };
+
   const setupFormHandler = () => {
     const form = document.getElementById("add-task-form");
     form.addEventListener("submit", function (e) {
@@ -239,6 +242,48 @@ export const addTaskOverlay = (function () {
       );
       form.reset();
       document.body.removeChild(document.getElementById("add-task-overlay"));
+      document.body.style.backgroundColor = "white";
+    });
+  };
+  return { render };
+})();
+
+export const searchOverlay = (function () {
+  const render = async () => {
+    const searchHolder = document.createElement("div");
+    searchHolder.setAttribute("id", "search-overlay");
+    // add html template for search form
+    searchHolder.innerHTML = searchOverlayHtml;
+    document.body.append(searchHolder);
+    document.body.style.backgroundColor = "grey";
+    setupFormHandler();
+    const form = document.getElementById("search-overlay");
+    document.addEventListener("mousedown", (event) => {
+      if (document.getElementById("search-overlay")) {
+        const currentForm = document.getElementById("search-overlay");
+        if (
+          form &&
+          !form.contains(event.target) &&
+          event.target.closest("#search-overlay") === null
+        ) {
+          try {
+            currentForm.parentElement.removeChild(form);
+          } catch (error) {
+            console.log("Error removing overlay:", error);
+          }
+        }
+      }
+    });
+  };
+
+  const setupFormHandler = () => {
+    const form = document.getElementById("search-form");
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const taskName = document.getElementById("search-name").value;
+      console.log(taskName);
+      form.reset();
+      document.body.removeChild(document.getElementById("search-overlay"));
       document.body.style.backgroundColor = "white";
     });
   };

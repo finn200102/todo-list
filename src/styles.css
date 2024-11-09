@@ -39,12 +39,42 @@ body {
   color: white;
 }
 
+#search-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  display: grid;
+  background-color: white;
+  border-radius: 20px;
+  background-color: var(--dark-color);
+  color: white;
+  min-width: 50%;
+}
+
 #add-task-form {
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 5px;
   padding: 10px;
+}
+
+#search-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  padding: 10px;
+}
+
+#search-form > input {
+  border: none;
+  border-radius: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
+  min-height: 20px;
 }
 
 #add-task-form > input {

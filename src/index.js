@@ -1,5 +1,5 @@
 import "./styles.css";
-import { TodoManager, tasksPage, addTaskOverlay } from "./todo";
+import { TodoManager, tasksPage, addTaskOverlay, searchOverlay } from "./todo";
 
 const listTaskButton = document.getElementById("list-task-button");
 listTaskButton.addEventListener("click", function () {
@@ -26,4 +26,9 @@ standartProjectButton.addEventListener("click", function () {
 const addTaskButton = document.getElementById("add-task-button");
 addTaskButton.addEventListener("click", function () {
   addTaskOverlay.render();
+});
+
+const searchButton = document.getElementById("search-button");
+searchButton.addEventListener("click", function () {
+  searchOverlay.render();
 });
