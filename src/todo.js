@@ -55,6 +55,7 @@ export const TodoManager = (function () {
       addProject(todo.project);
     }
   };
+
   const removeTodo = (id) => {
     let newArray = todos.filter((item) => item.id !== +id);
     todos = newArray;
@@ -74,6 +75,14 @@ export const TodoManager = (function () {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const getTodoById = (id) => {
+    return todos.filter((todo) => {
+      if (todo.id == i) {
+        return true;
+      }
+    });
   };
   const listTodosBySearch = (searchTerm) => {
     return todos.filter((todo) => {
@@ -144,6 +153,7 @@ export const TodoManager = (function () {
     listTodosByProject,
     listTodosBySearch,
     removeProject,
+    getTodoById,
   };
 })();
 
@@ -237,8 +247,19 @@ const renderTasks = (function () {
         TodoManager.removeTodo(id);
         content.children[1].removeChild(element);
       });
-      const todoDescription = element.querySelector("#todo-item-description");
-      todoDescription.textContent = tasks[i].description;
+      element.addEventListener("dblclick", function () {
+        if (element.querySelector(".description") == null) {
+          const id = element.getAttribute("task-id");
+          // tasks[i]
+          const description = document.createElement("p");
+          description.classList.add("description");
+          description.textContent = tasks[i].description;
+          element.appendChild(description);
+        } else {
+          element.removeChild(element.querySelector(".description"));
+        }
+      });
+
       taskHolder.appendChild(element);
     }
 
