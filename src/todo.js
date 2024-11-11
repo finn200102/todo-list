@@ -255,8 +255,14 @@ const renderTasks = (function () {
           description.classList.add("description");
           description.textContent = tasks[i].description;
           element.appendChild(description);
+
+          const notes = document.createElement("p");
+          notes.classList.add("notes");
+          notes.textContent = tasks[i].notes;
+          element.appendChild(notes);
         } else {
           element.removeChild(element.querySelector(".description"));
+          element.removeChild(element.querySelector(".notes"));
         }
       });
 
