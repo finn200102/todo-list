@@ -94,10 +94,11 @@ body {
 #todo-item {
   display: grid;
   grid-template-columns: 3fr 1fr 0.1fr;
-  grid-template-rows: 1 fr 2fr;
+  grid-template-rows: 1 fr 2fr 2fr;
   margin: 10px;
   background-color: var(--dark-color);
   color: white;
+  gap: 5px;
   padding: 10px;
   border-radius: 10px;
 }
@@ -112,6 +113,20 @@ body {
   margin: 0;
 }
 
+.description,
+.notes {
+  border: 1px solid white;
+  padding: 3px;
+  border-radius: 2px;
+}
+
+.description {
+  grid-column: 1/4;
+}
+
+.notes {
+  grid-column: 1/4;
+}
 #todo-item-title {
   margin: 0;
 }
