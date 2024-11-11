@@ -280,11 +280,20 @@ const renderTasks = (function () {
         if (element.querySelector(".description") == null) {
           const id = element.getAttribute("task-id");
           // tasks[i]
+
+          const descriptionTitle = document.createElement("h3");
+          descriptionTitle.classList.add("description-title");
+          descriptionTitle.textContent = "Description:";
+          element.appendChild(descriptionTitle);
           const description = document.createElement("p");
           description.classList.add("description");
           description.textContent = tasks[i].description;
           element.appendChild(description);
 
+          const notesTitle = document.createElement("h3");
+          notesTitle.classList.add("notes-title");
+          notesTitle.textContent = "Notes:";
+          element.appendChild(notesTitle);
           const notes = document.createElement("p");
           notes.classList.add("notes");
           notes.textContent = tasks[i].notes;
@@ -292,6 +301,8 @@ const renderTasks = (function () {
         } else {
           element.removeChild(element.querySelector(".description"));
           element.removeChild(element.querySelector(".notes"));
+          element.removeChild(element.querySelector(".description-title"));
+          element.removeChild(element.querySelector(".notes-title"));
         }
       });
 
