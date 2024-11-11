@@ -71,12 +71,15 @@ export const TodoManager = (function () {
       return [];
     }
     try {
-      return todos.sort((a, b) => {
-        if (!a.dueDate && !b.dueDate) return 0;
-        if (!a.dueDate) return 1;
-        if (!b.dueDate) return -1;
-        return compareAsc(a.dueDate, b.dueDate);
-      });
+      return todos
+        .sort((a, b) => {
+          if (!a.dueDate && !b.dueDate) return 0;
+          if (!a.dueDate) return 1;
+          if (!b.dueDate) return -1;
+          return compareAsc(a.dueDate, b.dueDate);
+        })
+        .sort((a, b) => a.priority - b.priority)
+        .sort((a, b) => compareAsc(a.dueDate, b.dueDate));
     } catch (error) {
       console.log(error);
     }
@@ -94,20 +97,26 @@ export const TodoManager = (function () {
     return todos.findIndex((todo) => todo.id == id);
   };
   const listTodosBySearch = (searchTerm) => {
-    return todos.filter((todo) => {
-      if (todo.title.includes(searchTerm)) {
-        return true;
-      }
-    });
+    return todos
+      .filter((todo) => {
+        if (todo.title.includes(searchTerm)) {
+          return true;
+        }
+      })
+      .sort((a, b) => a.priority - b.priority)
+      .sort((a, b) => compareAsc(a.dueDate, b.dueDate));
   };
   const listTodosByProject = (project) => {
     // returns an array of todos with the specified project
     if (projects.includes(project)) {
-      return todos.filter((todo) => {
-        if (todo.project === project) {
-          return true;
-        }
-      });
+      return todos
+        .filter((todo) => {
+          if (todo.project === project) {
+            return true;
+          }
+        })
+        .sort((a, b) => a.priority - b.priority)
+        .sort((a, b) => compareAsc(a.dueDate, b.dueDate));
     } else {
       return null;
     }
@@ -131,6 +140,7 @@ export const TodoManager = (function () {
           return false;
         }
       })
+      .sort((a, b) => a.priority - b.priority)
       .sort((a, b) => {
         compareAsc(a.dueDate, b.dueDate);
       });
@@ -146,6 +156,7 @@ export const TodoManager = (function () {
           return false;
         }
       })
+      .sort((a, b) => a.priority - b.priority)
       .sort((a, b) => compareAsc(a.dueDate, b.dueDate));
 
     return results;
@@ -257,6 +268,9 @@ const renderTasks = (function () {
         "dd/MM/yyyy"
       );
       const todoDeleteButton = element.querySelector("#todo-delete-button");
+      const todoPriority = element.querySelector("#todo-priority");
+      todoPriority.textContent = tasks[i].priority.toString();
+
       todoDeleteButton.addEventListener("click", () => {
         const id = element.getAttribute("task-id");
         TodoManager.removeTodo(id);
@@ -360,7 +374,9 @@ export const addTaskOverlay = (function () {
       const taskName = document.getElementById("task-name").value;
       const taskDescription = document.getElementById("task-description").value;
       const taskDueDate = document.getElementById("task-due-date").value;
-      const taskPriority = document.getElementById("task-priority").value;
+      const taskPriority = document.getElementById("task-priority").value
+        ? parseInt(document.getElementById("task-priority").value)
+        : 0;
       const taskNotes = document.getElementById("task-notes").value;
       const taskProject = document.getElementById("projects-input").value;
 
