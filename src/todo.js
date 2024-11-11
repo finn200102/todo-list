@@ -48,6 +48,11 @@ export const TodoManager = (function () {
       localStorage.setItem("projects", JSON.stringify(projects));
     }
   };
+  const toggelCheckbox = (id) => {
+    todos[getIdxById(id)].checkbox = !todos[getIdxById(id)].checkbox;
+
+    localStorage.setItem("todos", JSON.stringify(todos));
+  };
   const addTodo = (todo) => {
     todos.push(todo);
     localStorage.setItem("todos", JSON.stringify(todos));
@@ -79,10 +84,14 @@ export const TodoManager = (function () {
 
   const getTodoById = (id) => {
     return todos.filter((todo) => {
-      if (todo.id == i) {
+      if (todo.id == id) {
         return true;
       }
     });
+  };
+
+  const getIdxById = (id) => {
+    return todos.findIndex((todo) => todo.id == id);
   };
   const listTodosBySearch = (searchTerm) => {
     return todos.filter((todo) => {
@@ -154,6 +163,7 @@ export const TodoManager = (function () {
     listTodosBySearch,
     removeProject,
     getTodoById,
+    toggelCheckbox,
   };
 })();
 
@@ -232,6 +242,11 @@ const renderTasks = (function () {
     for (let i = 0; i < tasks.length; i++) {
       const element = template.content.cloneNode(true).children[0];
       element.setAttribute("task-id", tasks[i].id);
+      const checkBox = element.querySelector("#todo-check");
+      checkBox.checked = tasks[i].checkbox;
+      checkBox.addEventListener("click", function () {
+        TodoManager.toggelCheckbox(tasks[i].id);
+      });
       const todoTitle = element.querySelector("#todo-item-title");
 
       todoTitle.textContent = tasks[i].title;
