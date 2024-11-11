@@ -32,6 +32,16 @@ export const TodoManager = (function () {
   const listProjects = () => {
     return projects;
   };
+  const removeProject = (project) => {
+    projects = projects.filter((p) => {
+      if (p == project) {
+        return false;
+      } else {
+        return true;
+      }
+    });
+    localStorage.setItem("projects", JSON.stringify(projects));
+  };
   const addProject = (project) => {
     if (!projects.includes(project)) {
       projects.push(project);
@@ -133,6 +143,7 @@ export const TodoManager = (function () {
     listProjects,
     listTodosByProject,
     listTodosBySearch,
+    removeProject,
   };
 })();
 
@@ -151,6 +162,24 @@ export const projectButtons = (function () {
       projectsContainer.appendChild(button);
       button.addEventListener("click", () => {
         tasksPage.renderProjectPage(projects[i]);
+      });
+      let pressTimer;
+
+      button.addEventListener("mousedown", () => {
+        pressTimer = setTimeout(() => {
+          // Action to perform after 3 seconds
+          console.log("Button held for 3 seconds");
+          TodoManager.removeProject(projects[i]);
+        }, 3000);
+      });
+
+      button.addEventListener("mouseup", () => {
+        clearTimeout(pressTimer);
+      });
+
+      // Clear timer if mouse leaves button
+      button.addEventListener("mouseleave", () => {
+        clearTimeout(pressTimer);
       });
     }
   };
@@ -181,6 +210,7 @@ const clearContent = () => {
 
 const renderTasks = (function () {
   const renderTaskpage = (tasks, title) => {
+    console.log(tasks);
     clearContent();
     const content = document.getElementById("content");
     const contentTitle = document.createElement("h2");

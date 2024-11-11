@@ -131,3 +131,9 @@ body {
 .sidebar-button:hover {
   background-color: var(--strong-accent);
 }
+
+.project-button.pressing {
+  background: linear-gradient(to right, #4caf50 50%, #2196f3 50%);
+  background-size: 200% 100%;
+  background-position: 100% 0;
+}
