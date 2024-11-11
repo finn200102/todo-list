@@ -210,7 +210,6 @@ const clearContent = () => {
 
 const renderTasks = (function () {
   const renderTaskpage = (tasks, title) => {
-    console.log(tasks);
     clearContent();
     const content = document.getElementById("content");
     const contentTitle = document.createElement("h2");
