@@ -66,6 +66,10 @@ export const TodoManager = (function () {
     todos = newArray;
     localStorage.setItem("todos", JSON.stringify(todos));
   };
+
+  const replaceTodoById = (id, t) => {
+    todos[getIdxById(id)] = todo(t[0], t[1], t[2], t[3], t[4], t[5]);
+  };
   const listTodos = () => {
     if (!todos || todos.length === 0) {
       return [];
@@ -175,6 +179,7 @@ export const TodoManager = (function () {
     removeProject,
     getTodoById,
     toggelCheckbox,
+    replaceTodoById,
   };
 })();
 
@@ -298,11 +303,19 @@ const renderTasks = (function () {
           notes.classList.add("notes");
           notes.textContent = tasks[i].notes;
           element.appendChild(notes);
+          const editButton = document.createElement("button");
+          editButton.classList.add("edit-button");
+          editButton.textContent = "Edit";
+          editButton.addEventListener("click", () => {
+            editTaskOverlay.render(tasks[i].id);
+          });
+          element.appendChild(editButton);
         } else {
           element.removeChild(element.querySelector(".description"));
           element.removeChild(element.querySelector(".notes"));
           element.removeChild(element.querySelector(".description-title"));
           element.removeChild(element.querySelector(".notes-title"));
+          element.removeChild(element.querySelector(".edit-button"));
         }
       });
 
@@ -345,6 +358,92 @@ export const tasksPage = (function () {
     renderUpcommingNextWeek,
     renderProjectPage,
     renderSearchPage,
+  };
+})();
+
+const editTaskOverlay = (function () {
+  const render = async (id) => {
+    const addTaskHolder = document.createElement("div");
+    addTaskHolder.setAttribute("id", "add-task-overlay");
+    // add html template for add task form
+    addTaskHolder.innerHTML = overlayHtml;
+    document.body.append(addTaskHolder);
+    document.body.style.backgroundColor = "grey";
+
+    setupUpdateFormHandler(id);
+    const form = document.getElementById("add-task-overlay");
+    document.addEventListener("mousedown", (event) => {
+      if (document.getElementById("add-task-overlay")) {
+        const currentForm = document.getElementById("add-task-overlay");
+        if (
+          form &&
+          !form.contains(event.target) &&
+          event.target.closest("#add-task-overlay") === null
+        ) {
+          try {
+            currentForm.parentElement.removeChild(form);
+          } catch (error) {
+            console.log("Error removing overlay:", error);
+          }
+        }
+      }
+    });
+
+    populateDatalist.populate(TodoManager.listProjects());
+  };
+
+  const setupUpdateFormHandler = (id) => {
+    // only get the form data
+
+    const form = document.getElementById("add-task-form");
+
+    const todo = TodoManager.getTodoById(id);
+    // Add taskName to form
+    const taskName = document.getElementById("task-name");
+    taskName.value = todo[0].title;
+    // Add taskDescription to form
+    const taskDescription = document.getElementById("task-description");
+    taskDescription.value = todo[0].description;
+    // Add taskDueDate to form
+    const taskDueDate = document.getElementById("task-due-date");
+    taskDueDate.value = todo[0].dueDate;
+    // Add taskPriority to form
+    const taskPriority = document.getElementById("task-priority");
+    taskPriority.value = todo[0].priority;
+    // Add taskNotes to form
+    const taskNotes = document.getElementById("task-notes");
+    taskNotes.value = todo[0].notes;
+    // taskProject to form
+    const taskProject = document.getElementById("projects-input");
+    taskProject.value = todo[0].project;
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const taskName = document.getElementById("task-name").value;
+      const taskDescription = document.getElementById("task-description").value;
+      const taskDueDate = document.getElementById("task-due-date").value;
+      const taskPriority = document.getElementById("task-priority").value
+        ? parseInt(document.getElementById("task-priority").value)
+        : 0;
+      const taskNotes = document.getElementById("task-notes").value;
+      const taskProject = document.getElementById("projects-input").value;
+
+      TodoManager.replaceTodoById(id, [
+        taskName,
+        taskDescription,
+        taskDueDate,
+        taskProject,
+        taskPriority,
+        taskNotes,
+      ]);
+
+      // console.log(format(new Date(taskDueDate), "MM/dd/yyyy"));
+      form.reset();
+      document.body.removeChild(document.getElementById("add-task-overlay"));
+      document.body.style.backgroundColor = "white";
+    });
+  };
+  return {
+    render,
   };
 })();
 
