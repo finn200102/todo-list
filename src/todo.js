@@ -14,7 +14,9 @@ const todo = (title, description, dueDate, project, priority, notes) => {
     checkbox: false,
   };
 };
-
+/**
+ * A object factory for all the methods to manipulate the todoarray
+ */
 export const TodoManager = (function () {
   // writes, saves, loads all the todos and projects
   let todos = [];
@@ -29,9 +31,17 @@ export const TodoManager = (function () {
   } else {
     projects = JSON.parse(localStorage.getItem("projects"));
   }
+  /**
+   *
+   * @returns - project array
+   */
   const listProjects = () => {
     return projects;
   };
+  /**
+   * removes a project from the project array and then saves this
+   * @param {string} project - a project
+   */
   const removeProject = (project) => {
     projects = projects.filter((p) => {
       if (p == project) {
@@ -42,17 +52,29 @@ export const TodoManager = (function () {
     });
     localStorage.setItem("projects", JSON.stringify(projects));
   };
+  /**
+   * Adds a project to the array and then saves
+   * @param {string} project - a project
+   */
   const addProject = (project) => {
     if (!projects.includes(project)) {
       projects.push(project);
       localStorage.setItem("projects", JSON.stringify(projects));
     }
   };
+  /**
+   * toggles the checkbox of a todo and saves
+   * @param {int} id - An unique id for each todo
+   */
   const toggelCheckbox = (id) => {
     todos[getIdxById(id)].checkbox = !todos[getIdxById(id)].checkbox;
 
     localStorage.setItem("todos", JSON.stringify(todos));
   };
+  /**
+   * Adds a todo to the todo array and then saves
+   * @param {todo} todo - a todo object
+   */
   const addTodo = (todo) => {
     todos.push(todo);
     localStorage.setItem("todos", JSON.stringify(todos));
@@ -60,16 +82,27 @@ export const TodoManager = (function () {
       addProject(todo.project);
     }
   };
-
+  /**
+   * Removes a todo with a certain id and then saves
+   * @param {int} id - An unique id of a todo
+   */
   const removeTodo = (id) => {
     let newArray = todos.filter((item) => item.id !== +id);
     todos = newArray;
     localStorage.setItem("todos", JSON.stringify(todos));
   };
-
+  /**
+   * replaces a todo with another todo (edit), the id changes
+   * @param {int} id - A unique id to indetifiy each todo
+   * @param {todo} t - a todo object
+   */
   const replaceTodoById = (id, t) => {
     todos[getIdxById(id)] = todo(t[0], t[1], t[2], t[3], t[4], t[5]);
   };
+  /**
+   *
+   * @returns - sorted list of all todos
+   */
   const listTodos = () => {
     if (!todos || todos.length === 0) {
       return [];
@@ -88,7 +121,11 @@ export const TodoManager = (function () {
       console.log(error);
     }
   };
-
+  /**
+   * return a todo with a specific id
+   * @param {int} id - todo.id
+   * @returns todo
+   */
   const getTodoById = (id) => {
     return todos.filter((todo) => {
       if (todo.id == id) {
@@ -96,10 +133,19 @@ export const TodoManager = (function () {
       }
     });
   };
-
+  /**
+   * Return an inx in the todo array from a todo.id
+   * @param {int} id - todo.id
+   * @returns int
+   */
   const getIdxById = (id) => {
     return todos.findIndex((todo) => todo.id == id);
   };
+  /**
+   * Returns an array of todos that match a specific search term
+   * @param {string} searchTerm - A search term (searches in the todo.title)
+   * @returns array[todo]
+   */
   const listTodosBySearch = (searchTerm) => {
     return todos
       .filter((todo) => {
@@ -110,6 +156,11 @@ export const TodoManager = (function () {
       .sort((a, b) => a.priority - b.priority)
       .sort((a, b) => compareAsc(a.dueDate, b.dueDate));
   };
+  /**
+   * Returns an array of todos that all have a specific project
+   * @param {string} project - a project
+   * @returns array[todo]
+   */
   const listTodosByProject = (project) => {
     // returns an array of todos with the specified project
     if (projects.includes(project)) {
@@ -125,12 +176,25 @@ export const TodoManager = (function () {
       return null;
     }
   };
+  /**
+   * Returns an todo from the array at a specific index
+   * @param {int} idx - integer
+   * @returns todo
+   */
   const getTodoByIdx = (idx) => {
     return todos[idx];
   };
+  /**
+   *
+   * @returns lenght of the todos array
+   */
   const countTodos = () => {
     return todos.length;
   };
+  /**
+   * Returns todos that are due today
+   * @returns array[todo]
+   */
   const dueToday = () => {
     const results = todos
       .filter((todo) => {
@@ -150,6 +214,10 @@ export const TodoManager = (function () {
       });
     return results;
   };
+  /**
+   * Returns an array of todos that are due next week
+   * @returns array[todo]
+   */
   const upcommingNextWeek = () => {
     const results = todos
       .filter((todo) => {
@@ -182,25 +250,33 @@ export const TodoManager = (function () {
     replaceTodoById,
   };
 })();
-
+/**
+ * A object factory to create projectButton/sections for each project
+ */
 export const projectButtons = (function () {
+  /**
+   * Creates the buttons
+   */
   const createButtons = () => {
     let projects = TodoManager.listProjects();
     const projectsContainer = document.getElementById("projects-container");
+    // clears the project container first
     while (projectsContainer.firstChild) {
       projectsContainer.removeChild(projectsContainer.firstChild);
     }
+    // add for each project a button
     for (let i = 0; i < projects.length; i++) {
       const button = document.createElement("button");
       button.textContent = projects[i];
       button.classList.add("sidebar-button");
       button.classList.add("project-button");
       projectsContainer.appendChild(button);
+      // render the projectPage for a click on a project button
       button.addEventListener("click", () => {
         tasksPage.renderProjectPage(projects[i]);
       });
       let pressTimer;
-
+      // deletes a project when pressed for 3 seconds
       button.addEventListener("mousedown", () => {
         pressTimer = setTimeout(() => {
           // Action to perform after 3 seconds
@@ -224,7 +300,14 @@ export const projectButtons = (function () {
   };
 })();
 
+/**
+ * A object factory that populates the datalist in the add/edit Overlay
+ */
 const populateDatalist = (function () {
+  /**
+   * Populates the datalist with the projects to select
+   * @param {array[string]} projects - an array of the projects
+   */
   const populate = (projects) => {
     const datalist = document.getElementById("projects");
     datalist.innerHTML = "";
@@ -237,24 +320,36 @@ const populateDatalist = (function () {
   return { populate };
 })();
 
+/**
+ * A function that clears all children from the content section
+ */
 const clearContent = () => {
   const content = document.getElementById("content");
   while (content.firstChild) {
     content.removeChild(content.firstChild);
   }
 };
-
+/**
+ * Creates a object factory for rendering the Taskpage
+ */
 const renderTasks = (function () {
+  /**
+   *
+   * @param {array[todo]} tasks - array of the todos to render
+   * @param {string} title - the title of the page to render
+   */
   const renderTaskpage = (tasks, title) => {
     clearContent();
     const content = document.getElementById("content");
     const contentTitle = document.createElement("h2");
+
     contentTitle.textContent = title;
     content.appendChild(contentTitle);
 
     const template = document.getElementById("todo-item-template");
 
     const taskHolder = document.createElement("div");
+    // Create the todo times
     for (let i = 0; i < tasks.length; i++) {
       const element = template.content.cloneNode(true).children[0];
       element.setAttribute("task-id", tasks[i].id);
@@ -281,6 +376,7 @@ const renderTasks = (function () {
         TodoManager.removeTodo(id);
         content.children[1].removeChild(element);
       });
+      // on double click creates the description and notes seciton
       element.addEventListener("dblclick", function () {
         if (element.querySelector(".description") == null) {
           const id = element.getAttribute("task-id");
@@ -311,6 +407,7 @@ const renderTasks = (function () {
           });
           element.appendChild(editButton);
         } else {
+          // on second double click closes the todo
           element.removeChild(element.querySelector(".description"));
           element.removeChild(element.querySelector(".notes"));
           element.removeChild(element.querySelector(".description-title"));
@@ -327,25 +424,45 @@ const renderTasks = (function () {
   return { renderTaskpage };
 })();
 
+/**
+ * Creats a object factory for the diffrent render Calls to renderTasks
+ */
 export const tasksPage = (function () {
+  /**
+   * Renders the complete todo list
+   */
   const renderTaskPage = () => {
     renderTasks.renderTaskpage(TodoManager.listTodos(), "Todos");
   };
+  /**
+   * Renders the duetoday todo list
+   */
   const renderDueTodayPage = () => {
     renderTasks.renderTaskpage(TodoManager.dueToday(), "Due Today");
   };
+  /**
+   * Renders a project page with the coresponding todos
+   * @param {string} project - the name of the project of the todos
+   */
   const renderProjectPage = (project) => {
     renderTasks.renderTaskpage(
       TodoManager.listTodosByProject(project),
       project
     );
   };
+  /**
+   * Renders a search page for a searchterm
+   * @param {string} searchTerm - A searchterm to search in titles of the todos
+   */
   const renderSearchPage = (searchTerm) => {
     renderTasks.renderTaskpage(
       TodoManager.listTodosBySearch(searchTerm),
       "Search Results:"
     );
   };
+  /**
+   * Renders the upcomming todos for the nextWeek
+   */
   const renderUpcommingNextWeek = () => {
     renderTasks.renderTaskpage(
       TodoManager.upcommingNextWeek(),
@@ -361,7 +478,14 @@ export const tasksPage = (function () {
   };
 })();
 
+/**
+ * Creates an object factory for the Overlay to edit a task
+ */
 const editTaskOverlay = (function () {
+  /**
+   * Renders the Overlay to edit a task (same as the add Overlay)
+   * @param {int} id - id to indentify a todo
+   */
   const render = async (id) => {
     const addTaskHolder = document.createElement("div");
     addTaskHolder.setAttribute("id", "add-task-overlay");
@@ -372,6 +496,7 @@ const editTaskOverlay = (function () {
 
     setupUpdateFormHandler(id);
     const form = document.getElementById("add-task-overlay");
+    // Closes the Overlay when clicked outside
     document.addEventListener("mousedown", (event) => {
       if (document.getElementById("add-task-overlay")) {
         const currentForm = document.getElementById("add-task-overlay");
@@ -391,7 +516,10 @@ const editTaskOverlay = (function () {
 
     populateDatalist.populate(TodoManager.listProjects());
   };
-
+  /**
+   * Creates the Overlay, puts in the data from the todo and saves the edit
+   * @param {int} id - id to indentify a todo
+   */
   const setupUpdateFormHandler = (id) => {
     // only get the form data
 
@@ -446,8 +574,13 @@ const editTaskOverlay = (function () {
     render,
   };
 })();
-
+/**
+ * Creates an object factory for the Overlay to add a task (same as the edit overlay)
+ */
 export const addTaskOverlay = (function () {
+  /**
+   * Renders the overlay
+   */
   const render = async () => {
     const addTaskHolder = document.createElement("div");
     addTaskHolder.setAttribute("id", "add-task-overlay");
@@ -457,6 +590,7 @@ export const addTaskOverlay = (function () {
     document.body.style.backgroundColor = "grey";
     setupFormHandler();
     const form = document.getElementById("add-task-overlay");
+    // A click outside of the overlay closes it
     document.addEventListener("mousedown", (event) => {
       if (document.getElementById("add-task-overlay")) {
         const currentForm = document.getElementById("add-task-overlay");
@@ -476,7 +610,9 @@ export const addTaskOverlay = (function () {
 
     populateDatalist.populate(TodoManager.listProjects());
   };
-
+  /**
+   * Creates the Overlay and on submit creates/adds the todo
+   */
   const setupFormHandler = () => {
     const form = document.getElementById("add-task-form");
     form.addEventListener("submit", function (e) {
@@ -509,7 +645,13 @@ export const addTaskOverlay = (function () {
   return { render };
 })();
 
+/**
+ * An object factory for the SearchOverlay
+ */
 export const searchOverlay = (function () {
+  /**
+   * Renders the search overlay
+   */
   const render = async () => {
     const searchHolder = document.createElement("div");
     searchHolder.setAttribute("id", "search-overlay");
@@ -519,6 +661,7 @@ export const searchOverlay = (function () {
     document.body.style.backgroundColor = "grey";
     setupFormHandler();
     const form = document.getElementById("search-overlay");
+    // Closes the searchOverlay when pressing the mouse outside
     document.addEventListener("mousedown", (event) => {
       if (document.getElementById("search-overlay")) {
         const currentForm = document.getElementById("search-overlay");
@@ -536,7 +679,9 @@ export const searchOverlay = (function () {
       }
     });
   };
-
+  /**
+   * Create the search form and calls the rendering of the searchpage
+   */
   const setupFormHandler = () => {
     const form = document.getElementById("search-form");
     form.addEventListener("submit", function (e) {

@@ -127,6 +127,10 @@ body {
   height: 15px;
 }
 
+#content > h2 {
+  text-align: center;
+}
+
 .description,
 .notes {
   border: 1px solid white;
@@ -143,6 +147,10 @@ body {
 }
 #todo-item-title {
   margin: 0;
+}
+
+#sidebar {
+  padding-top: 20px;
 }
 
 .sidebar-button {
